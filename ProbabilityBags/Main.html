@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Probs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <link href="css/custom.css" rel="stylesheet" media="screen" />
+</head>
+<body>
+    <div class="container">
+        <div class="alert" id="result" style="display: none">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <span id="msgData"></span>
+        </div>
+        <div class="row">
+            <div class="span6 cinza">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <legend>Data controller</legend>
+
+                        <div class="control-group">
+                            <label class="control-label" for="name">Tumor type:</label>
+                            <div class="controls">
+                                <input id="type" name="type" type="text" placeholder="Type" class="input-medium">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="name">Age:</label>
+                            <div class="controls">
+                                <input id="age" name="age" type="text" placeholder="Age" class="input-small">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="selectbasic">Chemotherapy?</label>
+                            <div class="controls">
+                                <select id="chemotherapy" name="chemotherapy" class="input-small">
+                                    <option value="">Choose one...</option>
+                                    <option value="S">Yes</option>
+                                    <option value="N">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="selectbasic">Radiotherapy?</label>
+                            <div class="controls">
+                                <select id="radiotherapy" name="radiotherapy" class="input-small">
+                                    <option value="">Choose one...</option>
+                                    <option value="S">Yes</option>
+                                    <option value="N">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="selectbasic">Cured?</label>
+                            <div class="controls">
+                                <select id="cured" name="cured" class="input-small">
+                                    <option value="">Choose one...</option>
+                                    <option value="S">Yes</option>
+                                    <option value="N">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="controls">
+                                <button id="btnSave" name="btnSave" class="btn btn-success">Save data</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+                <div class="form-horizontal">
+                    <div class="control-group controls-row">
+                        <label class="control-label" for="btnBuscar">Ready to filter?</label>
+                        <div class="controls">
+                            <button id="btnFilter" name="btnFilter" class="btn btn-primary">Gather data</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-horizontal">
+                    <div class="control-group controls-row">
+                        <label class="control-label" for="btnBuscar">Start over?</label>
+                        <div class="controls">
+                            <button id="btnClearData" name="btnClearData" class="btn btn-danger">Clear datasets</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="span5 cinza">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#tab1" data-toggle="tab">Result</a>
+                    </li>
+                    <li>
+                        <a href="#tab2" data-toggle="tab">Indexed data</a>
+                    </li>
+                    <li>
+                        <a href="#tab3" data-toggle="tab">View current graph
+
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab1">
+                        <p>Fill any of the fields on the left side and hit "Gather data"!</p>
+                    </div>
+                    <div class="tab-pane" id="tab2">
+                        <div id="dataPane">
+                            <p>Nothing yet</p>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tab3">
+                        <button id="btnUpdateGraph" name="btnUpdateGraph" class="btn btn-primary">Update graph</button><br />
+                        <div id="theGraph">
+                            <p>Building...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://ajax.microsoft.com/ajax/jQuery/jquery-1.9.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/ProbabilityBag.js"></script>
+    <script src="js/jstree.js"></script>
+    <script>
+
+        (function (w) {
+            var data = [
+                { type: "Brain", age: 21, chemotherapy: true, radiotherapy: false, cured: true },
+                { type: "Liver", age: 68, chemotherapy: false, radiotherapy: false, cured: true },
+                { type: "Bones", age: 4, chemotherapy: false, radiotherapy: false, cured: true },
+                { type: "Brain", age: 5, chemotherapy: true, radiotherapy: true, cured: true },
+                { type: "Brain", age: 4, chemotherapy: true, radiotherapy: true, cured: false },
+                { type: "Tongue", age: 12, chemotherapy: true, radiotherapy: true, cured: false }
+            ];
+
+            function updateData(p) {
+                if (typeof p !== "undefined") { data.push(p); }
+                pData.addMany(data);
+
+                var d = "";
+                for (var dataIndex = 0; dataIndex < data.length; dataIndex++) {
+                    d += "<p>";
+                    d += "<h4>" + data[dataIndex].type + "</h4>";
+                    d += "<p><span class='label'>Age</span> " + data[dataIndex].age + "</p>";
+                    d += "<p><span class='label'>Chemotherapy?</span> " + data[dataIndex].chemotherapy + "</p>";
+                    d += "<p><span class='label'>Radiotherapy</span> " + data[dataIndex].radiotherapy + "</p>";
+                    d += "<p><span class='label'>Cured?</span> " + data[dataIndex].cured + "</p>";
+                    d += "</p>";
+                }
+                $("#dataPane").html(d);
+            }
+
+            function rebuildTree() {
+
+                function getTreeData(f) {
+                    return (function (d) {
+                        var treeData = [];
+                        var _d = typeof d === "undefined" ? pData.getClusters() : d;
+                        for (var feature in _d) {
+                            if (!(feature.indexOf("$$$") === 0)) {
+                                if (typeof _d[feature] === "object") {
+                                    treeData.push({ "data": feature, "children": f(_d[feature]) });
+                                }
+                            }
+                        }
+                        return treeData;
+                    });
+                }
+
+                var data = (F.Y(getTreeData))();
+                
+                $("#theGraph").jstree({
+                    "json_data": {
+                        "data": data
+                    },
+                    "plugins": ["themes", "json_data", "ui"]
+                });
+            }
+
+            function plot(dt, pre) {
+                var p = typeof pre === "undefined" ? 0 : pre + 10;
+                var d = "<p style='margin:" + p + "px'>";
+                for (var element in dt) {
+                    if (typeof dt[element] === "object") {
+                        d += "<span class='label  label-success'>" + element + "</span>";
+                        d += plot(dt[element], p);
+                    } else {
+                        d += "<span class='label  label-inverse'>" + element + "</span>";
+                        d += "<span class='label'>" + dt[element] + "</span><br/>";
+                    }
+                }
+                d += "</p>";
+
+                return d;
+            }
+
+            $(w).ready(function () {
+
+                $("#btnUpdateGraph").click(rebuildTree);
+
+                $("#btnClearData").click(function () {
+                    data = [];
+                    atualizarDados();
+                    plot([]);
+                });
+
+                $("#btnFilter").click(function () {
+                    var query = {
+                        type: $("#type").val() !== "" ? $("#type").val() : null,
+                        age: $("#age").val() !== "" ? parseInt($("#age").val()) : null,
+                        radiotherapy: $("#radiotherapy").val() !== "" ? $("#radiotherapy").val() === "Y" : null,
+                        cured: $("#cured").val() !== "" ? $("#cured").val() === "Y" : null,
+                        chemotherapy: $("#chemotherapy").val() !== "" ? $("#chemotherapy").val() === "Y" : null
+                    };
+
+                    var chances = pData.getChancesFor(query);
+                    $("#tab1").html(plot(chances));
+                });
+
+                $("#btnSave").click(function () {
+                    if ($("#type").val() !== ""
+                        && $("#age").val() !== ""
+                        && $("#radiotherapy").val() !== ""
+                        && $("#chemotherapy").val() !== ""
+                        && $("#cured").val() !== "") {
+
+                        var p = {
+                            type: $("#type").val(),
+                            age: parseInt($("#age").val()),
+                            radiotherapy: $("#radiotherapy").val() === "Y",
+                            cured: $("#cured").val() === "Y",
+                            chemotherapy: $("#chemotherapy").val() === "Y"
+                        };
+
+                        updateData(p);
+                        $("#msgData").html("<strong>Ok!</strong> Data was saved!.");
+                        $("#result").attr("class", "").addClass("alert alert-success").show();
+                    }
+                    else {
+                        $("#msgData").html("<strong>Ops!</strong> Something's missing.");
+                        $("#result").attr("class", "").addClass("alert alert-error").show();
+                    }
+                    event.preventDefault();
+                });
+
+                updateData();
+                plot(data);
+                rebuildTree();
+            });
+        })(window)
+
+    </script>
+</body>
+</html>
